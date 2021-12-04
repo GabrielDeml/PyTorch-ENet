@@ -21,3 +21,4 @@
 <sup>2</sup> These are just for reference. Implementation, datasets, and hardware changes can lead to very different results. Reference hardware: Nvidia GTX 1070 and an AMD Ryzen 5 3600 3.6GHz. You can also train for 100 epochs or so and get similar mean IoU (± 2%).<br/>
 <sup>3</sup> Test set.<br/>
 <sup>4</sup> Validation set.
+iiikjlsadfasf
