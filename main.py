@@ -298,6 +298,8 @@ if __name__ == '__main__':
     loaders, w_class, class_encoding = load_dataset(dataset)
     train_loader, val_loader, test_loader = loaders
 
+
+
     if args.mode.lower() in {'train', 'full'}:
         model = train(train_loader, val_loader, w_class, class_encoding)
 
@@ -317,5 +319,10 @@ if __name__ == '__main__':
 
         if args.mode.lower() == 'test':
             print(model)
+
+        if args.mode.lower() == 'predict':
+            model = model = utils.load_checkpoint(model, optimizer, args.save_dir,
+                                      args.name)[0]
+            predict(model, test_loader, class_encoding)
 
         test(model, test_loader, w_class, class_encoding)
