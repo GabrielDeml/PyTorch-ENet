@@ -18,6 +18,8 @@ from args import get_arguments
 from data.utils import enet_weighing, median_freq_balancing
 import utils
 
+import numpy as np
+
 # Get the arguments
 args = get_arguments()
 
@@ -115,13 +117,18 @@ def load_dataset(dataset):
     print("\nWeighing technique:", args.weighing)
     print("Computing class weights...")
     print("(this can take a while depending on the dataset size)")
-    class_weights = 0
-    if args.weighing.lower() == 'enet':
-        class_weights = enet_weighing(train_loader, num_classes)
-    elif args.weighing.lower() == 'mfb':
-        class_weights = median_freq_balancing(train_loader, num_classes)
-    else:
-        class_weights = None
+    # class_weights = 0
+
+    # if args.weighing.lower() == 'enet':
+    #     class_weights = enet_weighing(train_loader, num_classes)
+    # elif args.weighing.lower() == 'mfb':
+    #     class_weights = median_freq_balancing(train_loader, num_classes)
+    # else:
+    #     class_weights = None
+
+    class_weights = np.array([ 0.0000,  3.3602, 14.0141,  4.9853, 39.2370, 36.4913, 32.8902, 46.2858,
+        40.6864,  6.6997, 33.5307, 18.5259, 32.9643, 47.6746, 12.6838, 45.1988,
+        45.7822, 45.8191, 48.4030, 42.7475])
 
     if class_weights is not None:
         class_weights = torch.from_numpy(class_weights).float().to(device)
@@ -253,6 +260,8 @@ def test(model, test_loader, class_weights, class_encoding):
 
 
 def predict(model, images, class_encoding):
+    print("\nPredicting...\n")
+
     images = images.to(device)
 
     # Make predictions!
@@ -320,9 +329,17 @@ if __name__ == '__main__':
         if args.mode.lower() == 'test':
             print(model)
 
-        if args.mode.lower() == 'predict':
-            model = model = utils.load_checkpoint(model, optimizer, args.save_dir,
-                                      args.name)[0]
-            predict(model, test_loader, class_encoding)
 
         test(model, test_loader, w_class, class_encoding)
+
+    if args.mode.lower() == 'predict':
+        num_classes = len(class_encoding)
+        model = ENet(num_classes).to(device)
+
+        # Initialize a optimizer just so we can retrieve the model from the
+        # checkpoint
+        optimizer = optim.Adam(model.parameters())
+        model = utils.load_checkpoint(model, optimizer, args.save_dir,
+                                    args.name)[0]
+        images, _ = iter(test_loader).next()
+        predict(model, images, class_encoding)
