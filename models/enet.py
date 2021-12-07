@@ -30,13 +30,17 @@ class InitialBlock(nn.Module):
                  in_channels,
                  out_channels,
                  bias=False,
-                 relu=True):
+                 relu="relu"):
         super().__init__()
 
-        if relu:
+        if relu=="relu":
             activation = nn.ReLU
-        else:
+        elif relu=="prelu":
             activation = nn.PReLU
+        elif relu=="mish":
+            activation = nn.Mish
+        elif relu=='swish':
+            activation = nn.SELU
 
         # Main branch - As stated above the number of output channels for this
         # branch is the total minus 3, since the remaining channels come from
@@ -118,7 +122,7 @@ class RegularBottleneck(nn.Module):
                  asymmetric=False,
                  dropout_prob=0,
                  bias=False,
-                 relu=True):
+                 relu="relu"):
         super().__init__()
 
         # Check in the internal_scale parameter is within the expected range
@@ -130,10 +134,14 @@ class RegularBottleneck(nn.Module):
 
         internal_channels = channels // internal_ratio
 
-        if relu:
+        if relu=="relu":
             activation = nn.ReLU
-        else:
+        elif relu=="prelu":
             activation = nn.PReLU
+        elif relu=="mish":
+            activation = nn.Mish
+        elif relu=='swish':
+            activation = nn.SELU
 
         # Main branch - shortcut connection
 
@@ -252,7 +260,7 @@ class DownsamplingBottleneck(nn.Module):
                  return_indices=False,
                  dropout_prob=0,
                  bias=False,
-                 relu=True):
+                 relu="relu"):
         super().__init__()
 
         # Store parameters that are needed later
@@ -267,10 +275,14 @@ class DownsamplingBottleneck(nn.Module):
 
         internal_channels = in_channels // internal_ratio
 
-        if relu:
+        if relu=="relu":
             activation = nn.ReLU
-        else:
+        elif relu=="prelu":
             activation = nn.PReLU
+        elif relu=="mish":
+            activation = nn.Mish
+        elif relu=='swish':
+            activation = nn.SELU
 
         # Main branch - max pooling followed by feature map (channels) padding
         self.main_max1 = nn.MaxPool2d(
@@ -387,7 +399,7 @@ class UpsamplingBottleneck(nn.Module):
                  internal_ratio=4,
                  dropout_prob=0,
                  bias=False,
-                 relu=True):
+                 relu="relu"):
         super().__init__()
 
         # Check in the internal_scale parameter is within the expected range
@@ -399,10 +411,14 @@ class UpsamplingBottleneck(nn.Module):
 
         internal_channels = in_channels // internal_ratio
 
-        if relu:
+        if relu=="relu":
             activation = nn.ReLU
-        else:
+        elif relu=="prelu":
             activation = nn.PReLU
+        elif relu=="mish":
+            activation = nn.Mish
+        elif relu=='swish':
+            activation = nn.SELU
 
         # Main branch - max pooling followed by feature map (channels) padding
         self.main_conv1 = nn.Sequential(
@@ -478,7 +494,7 @@ class ENet(nn.Module):
 
     """
 
-    def __init__(self, num_classes, encoder_relu=False, decoder_relu=True):
+    def __init__(self, num_classes, encoder_relu="mish", decoder_relu="mish"):
         super().__init__()
 
         self.initial_block = InitialBlock(3, 16, relu=encoder_relu)

@@ -1,0 +1,25 @@
+ARGUMENTS
+batch_size: 5
+dataset: cityscapes
+dataset_dir: data
+device: cuda
+epochs: 300
+height: 360
+ignore_unlabeled: True
+imshow_batch: False
+learning_rate: 0.0005
+lr_decay: 0.1
+lr_decay_epochs: 100
+mode: train
+name: enet1
+print_step: False
+resume: False
+save_dir: Saved_Models/mish_encoder_relu_decoder_enet/
+weighing: ENet
+weight_decay: 0.0002
+width: 480
+workers: 4
+
+BEST VALIDATION
+Epoch: 160
+Mean IoU: 0.445026503319932
