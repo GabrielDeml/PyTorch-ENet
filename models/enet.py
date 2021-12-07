@@ -494,7 +494,7 @@ class ENet(nn.Module):
 
     """
 
-    def __init__(self, num_classes, encoder_relu="mish", decoder_relu="mish"):
+    def __init__(self, num_classes, encoder_relu="mish", decoder_relu="prelu"):
         super().__init__()
 
         self.initial_block = InitialBlock(3, 16, relu=encoder_relu)
