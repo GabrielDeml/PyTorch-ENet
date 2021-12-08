@@ -20,6 +20,8 @@ import utils
 
 import numpy as np
 import time
+from torchvision.utils import save_image
+
 
 # Get the arguments
 args = get_arguments()
@@ -265,23 +267,37 @@ def predict(model, images, class_encoding):
 
     images = images.to(device)
     start_time = time.time()
-
-    # Make predictions!
-    model.eval()
-    with torch.no_grad():
-        predictions = model(images)
-    time_taken = time.time() - start_time
-    print('time: %.2f' % ( time_taken))
-    # Predictions is one-hot encoded with "num_classes" channels.
-    # Convert it to a single int using the indices where the maximum (1) occurs
-    _, predictions = torch.max(predictions.data, 1)
-
-    label_to_rgb = transforms.Compose([
+    for image in images:
+        start_time = time.time()
+        image = image.unsqueeze(0)
+        prediction = model(image)
+        _, predictions = torch.max(prediction, 1)
+        print("\nPrediction time: {0:.4f} seconds".format(time.time() - start_time))
+        label_to_rgb = transforms.Compose([
         ext_transforms.LongTensorToRGBPIL(class_encoding),
         transforms.ToTensor()
-    ])
-    color_predictions = utils.batch_transform(predictions.cpu(), label_to_rgb)
-    utils.imshow_batch(images.data.cpu(), color_predictions)
+         ])
+        color_predictions = utils.batch_transform(predictions.cpu(), label_to_rgb)
+        utils.imshow_batch(image.data.cpu(), color_predictions)
+        save_image(color_predictions, 'predictions_{0}.png'.format(time.time()))
+        
+
+    # # Make predictions!
+    # model.eval()
+    # with torch.no_grad():
+    #     predictions = model(images)
+    # time_taken = time.time() - start_time
+    # print('time: %.2f' % ( time_taken))
+    # # Predictions is one-hot encoded with "num_classes" channels.
+    # # Convert it to a single int using the indices where the maximum (1) occurs
+    # _, predictions = torch.max(predictions.data, 1)
+
+    # label_to_rgb = transforms.Compose([
+    #     ext_transforms.LongTensorToRGBPIL(class_encoding),
+    #     transforms.ToTensor()
+    # ])
+    # color_predictions = utils.batch_transform(predictions.cpu(), label_to_rgb)
+    # utils.imshow_batch(images.data.cpu(), color_predictions)
 
 
 # Run only if this module is being run directly
