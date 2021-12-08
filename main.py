@@ -19,6 +19,7 @@ from data.utils import enet_weighing, median_freq_balancing
 import utils
 
 import numpy as np
+import time
 
 # Get the arguments
 args = get_arguments()
@@ -263,12 +264,14 @@ def predict(model, images, class_encoding):
     print("\nPredicting...\n")
 
     images = images.to(device)
+    start_time = time.time()
 
     # Make predictions!
     model.eval()
     with torch.no_grad():
         predictions = model(images)
-
+    time_taken = time.time() - start_time
+    print('time: %.2f' % ( time_taken))
     # Predictions is one-hot encoded with "num_classes" channels.
     # Convert it to a single int using the indices where the maximum (1) occurs
     _, predictions = torch.max(predictions.data, 1)
