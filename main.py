@@ -72,7 +72,7 @@ def load_dataset(dataset):
     # Load the test set as tensors
     test_set = dataset(
         args.dataset_dir,
-        mode='demoVideo',
+        mode='test',
         transform=image_transform,
         label_transform=label_transform)
     test_loader = data.DataLoader(
