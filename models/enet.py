@@ -494,7 +494,7 @@ class ENet(nn.Module):
 
     """
 
-    def __init__(self, num_classes, encoder_relu="mish", decoder_relu="prelu"):
+    def __init__(self, num_classes, encoder_relu="mish", decoder_relu="mish"):
         super().__init__()
 
         self.initial_block = InitialBlock(3, 16, relu=encoder_relu)
@@ -584,6 +584,18 @@ class ENet(nn.Module):
             64, padding=1, dropout_prob=0.1, relu=decoder_relu)
         self.regular4_2 = RegularBottleneck(
             64, padding=1, dropout_prob=0.1, relu=decoder_relu)
+        #self.regular4_3 = RegularBottleneck(
+        #    64, padding=1, dropout_prob=0.1, relu=decoder_relu)
+        #self.regular4_4 = RegularBottleneck(
+        #    64, padding=1, dropout_prob=0.1, relu=decoder_relu)
+        #self.regular4_5 = RegularBottleneck(
+        #    64, padding=1, dropout_prob=0.1, relu=decoder_relu)
+        #self.regular4_6 = RegularBottleneck(
+        #    64, padding=1, dropout_prob=0.1, relu=decoder_relu)
+        #self.regular4_7 = RegularBottleneck(
+        #    64, padding=1, dropout_prob=0.1, relu=decoder_relu)
+        #self.regular4_8 = RegularBottleneck(
+        #    64, padding=1, dropout_prob=0.1, relu=decoder_relu)
 
         # Stage 5 - Decoder
         self.upsample5_0 = UpsamplingBottleneck(
@@ -637,6 +649,13 @@ class ENet(nn.Module):
         x = self.upsample4_0(x, max_indices2_0, output_size=stage2_input_size)
         x = self.regular4_1(x)
         x = self.regular4_2(x)
+        
+        #x = self.regular4_3(x)
+        #x = self.regular4_4(x)
+        #x = self.regular4_5(x)
+        #x = self.regular4_6(x)
+        #x = self.regular4_7(x)
+        #x = self.regular4_8(x)
 
         # Stage 5 - Decoder
         x = self.upsample5_0(x, max_indices1_0, output_size=stage1_input_size)
