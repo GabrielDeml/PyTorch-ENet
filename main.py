@@ -335,7 +335,7 @@ if __name__ == '__main__':
     if args.mode.lower() in {'test', 'full'}:
         if args.mode.lower() == 'test':
             # Intialize a new ENet model
-            num_classes = len(class_encoding)
+            num_classes = 20
             model = ENet(num_classes).to(device)
 
         # Initialize a optimizer just so we can retrieve the model from the
