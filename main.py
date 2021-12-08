@@ -324,6 +324,7 @@ if __name__ == '__main__':
             args.dataset))
 
     loaders, w_class, class_encoding = load_dataset(dataset)
+    print("\nClass weights: {0}".format(len(class_encoding)))
     train_loader, val_loader, test_loader = loaders
 
 
