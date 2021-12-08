@@ -71,8 +71,8 @@ def load_dataset(dataset):
 
     # Load the test set as tensors
     test_set = dataset(
-        "/content/drive/MyDrive/WPI/Junior/CS 539/CS 539 Group/data/extracted_data/leftImg8bit/demoVideo/stuttgart_00",
-        mode='test',
+        args.dataset_dir,
+        mode='demoVideo',
         transform=image_transform,
         label_transform=label_transform)
     test_loader = data.DataLoader(
