@@ -195,31 +195,35 @@ def train(train_loader, val_loader, class_weights, class_encoding):
     for epoch in range(start_epoch, args.epochs):
         print(">>>> [Epoch: {0:d}] Training".format(epoch))
 
-        epoch_loss, (iou, miou) = train.run_epoch(args.print_step)
-        lr_updater.step()
+        # epoch_loss, (iou, miou) = train.run_epoch(args.print_step)
+        # lr_updater.step()
+
+        # print(">>>> [Epoch: {0:d}] Avg. loss: {1:.4f} | Mean IoU: {2:.4f}".
+        #       format(epoch, epoch_loss, miou))
+        
+
+
+        # if (epoch + 1) % 10 == 0 or epoch + 1 == args.epochs:
+        print(">>>> [Epoch: {0:d}] Validation".format(epoch))
+
+        loss, (iou, miou) = val.run_epoch(args.print_step)
+        for key, class_iou in zip(class_encoding.keys(), iou):
+            print("{0}: {1:.4f}".format(key, class_iou))
 
         print(">>>> [Epoch: {0:d}] Avg. loss: {1:.4f} | Mean IoU: {2:.4f}".
-              format(epoch, epoch_loss, miou))
-
-        if (epoch + 1) % 10 == 0 or epoch + 1 == args.epochs:
-            print(">>>> [Epoch: {0:d}] Validation".format(epoch))
-
-            loss, (iou, miou) = val.run_epoch(args.print_step)
-
-            print(">>>> [Epoch: {0:d}] Avg. loss: {1:.4f} | Mean IoU: {2:.4f}".
                   format(epoch, loss, miou))
 
-            # Print per class IoU on last epoch or if best iou
-            if epoch + 1 == args.epochs or miou > best_miou:
-                for key, class_iou in zip(class_encoding.keys(), iou):
-                    print("{0}: {1:.4f}".format(key, class_iou))
+            # # Print per class IoU on last epoch or if best iou
+            # if epoch + 1 == args.epochs or miou > best_miou:
+            #     for key, class_iou in zip(class_encoding.keys(), iou):
+            #         print("{0}: {1:.4f}".format(key, class_iou))
 
-            # Save the model if it's the best thus far
-            if miou > best_miou:
-                print("\nBest model thus far. Saving...\n")
-                best_miou = miou
-                utils.save_checkpoint(model, optimizer, epoch + 1, best_miou,
-                                      args)
+            # # Save the model if it's the best thus far
+            # if miou > best_miou:
+            #     print("\nBest model thus far. Saving...\n")
+            #     best_miou = miou
+            #     utils.save_checkpoint(model, optimizer, epoch + 1, best_miou,
+            #                           args)
 
     return model
 
@@ -281,11 +285,11 @@ def predict(model, images, class_encoding):
         transforms.ToTensor()
          ])
         color_predictions = utils.batch_transform(predictions.cpu(), label_to_rgb)
-        utils.imshow_batch(image.data.cpu(), color_predictions)
+        # utils.imshow_batch(image.data.cpu(), color_predictions)
         save_image(color_predictions, 'predictions_{0}.png'.format(i))
         i += 1
     average_time = average_time / i
-    print("\nPrediction time: {0:.4f} seconds".format(average_time))
+    print("\nAverage Prediction time: {0:.4f} seconds".format(average_time))
 
         
 
