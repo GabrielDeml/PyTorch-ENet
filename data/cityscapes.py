@@ -130,7 +130,7 @@ class Cityscapes(data.Dataset):
             data_path, label_path = self.val_data[index], self.val_labels[
                 index]
         elif self.mode.lower() == 'test':
-            if index < len(self.test_data) and index < len(self.test_labels):
+            if index < len(self.test_data) and index < len(self.test_labels) and index >= 0:
                 data_path, label_path = self.test_data[index], self.test_labels[
                     index]
             else:
