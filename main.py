@@ -285,7 +285,7 @@ def predict(model, images, class_encoding):
         save_image(color_predictions, 'predictions_{0}.png'.format(i))
         i += 1
     average_time = average_time / i
-    print("\nPrediction time: {0:.4f} seconds".format(average_time))
+    print("\nAverage time: {0:.4f} seconds".format(average_time))
 
         
 
