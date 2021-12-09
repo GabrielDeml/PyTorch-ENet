@@ -265,8 +265,8 @@ def test(model, test_loader, class_weights, class_encoding):
 def predict(model, images, class_encoding):
     print("\nPredicting...\n")
 
+    
     images = images.to(device)
-    start_time = time.time()
     for image in images:
         start_time = time.time()
         image = image.unsqueeze(0)
