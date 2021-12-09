@@ -133,7 +133,7 @@ class Cityscapes(data.Dataset):
             try:
                 data_path, label_path = self.test_data[index], self.test_labels[
                     index]
-            except:
+            except IndexError:
                 data_path, label_path = self.test_data[0], self.test_labels[0]
         else:
             raise RuntimeError("Unexpected dataset mode. "
