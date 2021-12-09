@@ -265,21 +265,28 @@ def test(model, test_loader, class_weights, class_encoding):
 def predict(model, images, class_encoding):
     print("\nPredicting...\n")
 
-    
+    i = 0
+    average_time = 0
     images = images.to(device)
     for image in images:
         start_time = time.time()
         image = image.unsqueeze(0)
         prediction = model(image)
         _, predictions = torch.max(prediction, 1)
-        print("\nPrediction time: {0:.4f} seconds".format(time.time() - start_time))
+        total_time = time.time() - start_time
+        average_time += total_time
+        print("\nPrediction time: {0:.4f} seconds".format(total_time))
         label_to_rgb = transforms.Compose([
         ext_transforms.LongTensorToRGBPIL(class_encoding),
         transforms.ToTensor()
          ])
         color_predictions = utils.batch_transform(predictions.cpu(), label_to_rgb)
         utils.imshow_batch(image.data.cpu(), color_predictions)
-        save_image(color_predictions, 'predictions_{0}.png'.format(time.time()))
+        save_image(color_predictions, 'predictions_{0}.png'.format(i))
+        i += 1
+    average_time = average_time / i
+    print("\nPrediction time: {0:.4f} seconds".format(average_time))
+
         
 
     # # Make predictions!
