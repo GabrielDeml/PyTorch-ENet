@@ -130,11 +130,11 @@ class Cityscapes(data.Dataset):
             data_path, label_path = self.val_data[index], self.val_labels[
                 index]
         elif self.mode.lower() == 'test':
-            try:
+            if index < len(self.test_data):
                 data_path, label_path = self.test_data[index], self.test_labels[
                     index]
-            except IndexError:
-                data_path, label_path = self.test_data[0], self.test_labels[0]
+            else:
+                data_path, label_path = self.test_data[-1], self.test_labels[-1]
         else:
             raise RuntimeError("Unexpected dataset mode. "
                                "Supported modes are: train, val and test")
