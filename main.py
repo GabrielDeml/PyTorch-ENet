@@ -120,18 +120,18 @@ def load_dataset(dataset):
     print("\nWeighing technique:", args.weighing)
     print("Computing class weights...")
     print("(this can take a while depending on the dataset size)")
-    # class_weights = 0
+    class_weights = 0
 
-    # if args.weighing.lower() == 'enet':
-    #     class_weights = enet_weighing(train_loader, num_classes)
-    # elif args.weighing.lower() == 'mfb':
-    #     class_weights = median_freq_balancing(train_loader, num_classes)
-    # else:
-    #     class_weights = None
+    if args.weighing.lower() == 'enet':
+        class_weights = enet_weighing(train_loader, num_classes)
+    elif args.weighing.lower() == 'mfb':
+        class_weights = median_freq_balancing(train_loader, num_classes)
+    else:
+        class_weights = None
 
-    class_weights = np.array([ 0.0000,  3.3602, 14.0141,  4.9853, 39.2370, 36.4913, 32.8902, 46.2858,
-        40.6864,  6.6997, 33.5307, 18.5259, 32.9643, 47.6746, 12.6838, 45.1988,
-        45.7822, 45.8191, 48.4030, 42.7475])
+    # class_weights = np.array([ 0.0000,  3.3602, 14.0141,  4.9853, 39.2370, 36.4913, 32.8902, 46.2858,
+    #     40.6864,  6.6997, 33.5307, 18.5259, 32.9643, 47.6746, 12.6838, 45.1988,
+    #     45.7822, 45.8191, 48.4030, 42.7475])
 
     if class_weights is not None:
         class_weights = torch.from_numpy(class_weights).float().to(device)
