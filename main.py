@@ -274,7 +274,8 @@ def predict(model, images, class_encoding):
         prediction = model(image)
         _, predictions = torch.max(prediction, 1)
         total_time = time.time() - start_time
-        average_time += total_time
+        if i!=0:
+            average_time += total_time
         print("\nPrediction time: {0:.4f} seconds".format(total_time))
         label_to_rgb = transforms.Compose([
         ext_transforms.LongTensorToRGBPIL(class_encoding),
@@ -284,7 +285,7 @@ def predict(model, images, class_encoding):
         utils.imshow_batch(image.data.cpu(), color_predictions)
         save_image(color_predictions, 'predictions_{0}.png'.format(i))
         i += 1
-    average_time = average_time / i
+    average_time = average_time / (i-1)
     print("\nAverage time: {0:.4f} seconds".format(average_time))
 
         
