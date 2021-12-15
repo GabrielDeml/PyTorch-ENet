@@ -11,11 +11,12 @@ def get_arguments():
     parser.add_argument(
         "--mode",
         "-m",
-        choices=['train', 'test', 'full'],
+        choices=['train', 'test', 'full', 'predict'],
         default='train',
         help=("train: performs training and validation; test: tests the model "
               "found in \"--save-dir\" with name \"--name\" on \"--dataset\"; "
-              "full: combines train and test modes. Default: train"))
+              "full: combines train and test modes. Default: train"
+              "predict: performs prediction on \"--dataset\"."))
     parser.add_argument(
         "--resume",
         action='store_true',

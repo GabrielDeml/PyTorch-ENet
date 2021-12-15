@@ -18,6 +18,11 @@ from args import get_arguments
 from data.utils import enet_weighing, median_freq_balancing
 import utils
 
+import numpy as np
+import time
+from torchvision.utils import save_image
+
+
 # Get the arguments
 args = get_arguments()
 
@@ -115,13 +120,18 @@ def load_dataset(dataset):
     print("\nWeighing technique:", args.weighing)
     print("Computing class weights...")
     print("(this can take a while depending on the dataset size)")
-    class_weights = 0
-    if args.weighing.lower() == 'enet':
-        class_weights = enet_weighing(train_loader, num_classes)
-    elif args.weighing.lower() == 'mfb':
-        class_weights = median_freq_balancing(train_loader, num_classes)
-    else:
-        class_weights = None
+    # class_weights = 0
+
+    # if args.weighing.lower() == 'enet':
+    #     class_weights = enet_weighing(train_loader, num_classes)
+    # elif args.weighing.lower() == 'mfb':
+    #     class_weights = median_freq_balancing(train_loader, num_classes)
+    # else:
+    #     class_weights = None
+
+    class_weights = np.array([ 0.0000,  3.3602, 14.0141,  4.9853, 39.2370, 36.4913, 32.8902, 46.2858,
+        40.6864,  6.6997, 33.5307, 18.5259, 32.9643, 47.6746, 12.6838, 45.1988,
+        45.7822, 45.8191, 48.4030, 42.7475])
 
     if class_weights is not None:
         class_weights = torch.from_numpy(class_weights).float().to(device)
@@ -253,23 +263,48 @@ def test(model, test_loader, class_weights, class_encoding):
 
 
 def predict(model, images, class_encoding):
+    print("\nPredicting...\n")
+
+    i = 0
+    average_time = 0
     images = images.to(device)
-
-    # Make predictions!
-    model.eval()
-    with torch.no_grad():
-        predictions = model(images)
-
-    # Predictions is one-hot encoded with "num_classes" channels.
-    # Convert it to a single int using the indices where the maximum (1) occurs
-    _, predictions = torch.max(predictions.data, 1)
-
-    label_to_rgb = transforms.Compose([
+    for image in images:
+        start_time = time.time()
+        image = image.unsqueeze(0)
+        prediction = model(image)
+        _, predictions = torch.max(prediction, 1)
+        total_time = time.time() - start_time
+        average_time += total_time
+        print("\nPrediction time: {0:.4f} seconds".format(total_time))
+        label_to_rgb = transforms.Compose([
         ext_transforms.LongTensorToRGBPIL(class_encoding),
         transforms.ToTensor()
-    ])
-    color_predictions = utils.batch_transform(predictions.cpu(), label_to_rgb)
-    utils.imshow_batch(images.data.cpu(), color_predictions)
+         ])
+        color_predictions = utils.batch_transform(predictions.cpu(), label_to_rgb)
+        utils.imshow_batch(image.data.cpu(), color_predictions)
+        save_image(color_predictions, 'predictions_{0}.png'.format(i))
+        i += 1
+    average_time = average_time / i
+    print("\nAverage time: {0:.4f} seconds".format(average_time))
+
+        
+
+    # # Make predictions!
+    # model.eval()
+    # with torch.no_grad():
+    #     predictions = model(images)
+    # time_taken = time.time() - start_time
+    # print('time: %.2f' % ( time_taken))
+    # # Predictions is one-hot encoded with "num_classes" channels.
+    # # Convert it to a single int using the indices where the maximum (1) occurs
+    # _, predictions = torch.max(predictions.data, 1)
+
+    # label_to_rgb = transforms.Compose([
+    #     ext_transforms.LongTensorToRGBPIL(class_encoding),
+    #     transforms.ToTensor()
+    # ])
+    # color_predictions = utils.batch_transform(predictions.cpu(), label_to_rgb)
+    # utils.imshow_batch(images.data.cpu(), color_predictions)
 
 
 # Run only if this module is being run directly
@@ -298,6 +333,8 @@ if __name__ == '__main__':
     loaders, w_class, class_encoding = load_dataset(dataset)
     train_loader, val_loader, test_loader = loaders
 
+
+
     if args.mode.lower() in {'train', 'full'}:
         model = train(train_loader, val_loader, w_class, class_encoding)
 
@@ -318,4 +355,17 @@ if __name__ == '__main__':
         if args.mode.lower() == 'test':
             print(model)
 
+
         test(model, test_loader, w_class, class_encoding)
+
+    if args.mode.lower() == 'predict':
+        num_classes = len(class_encoding)
+        model = ENet(num_classes).to(device)
+
+        # Initialize a optimizer just so we can retrieve the model from the
+        # checkpoint
+        optimizer = optim.Adam(model.parameters())
+        model = utils.load_checkpoint(model, optimizer, args.save_dir,
+                                    args.name)[0]
+        images, _ = iter(test_loader).next()
+        predict(model, images, class_encoding)
